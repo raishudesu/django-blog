@@ -1,0 +1,9 @@
+{% load static %}<!-- {{posts}} -->
+
+<link rel="stylesheet" href="{% static 'blog/style.css' %}" />
+
+{% for post in posts %}
+
+<a href="{{ post.id }}">{{post.title}}</a>
+
+{% endfor %} {% include "blog/test.html" %}
