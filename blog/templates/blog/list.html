@@ -1,9 +1,5 @@
-{% load static %}<!-- {{posts}} -->
+{% extends 'blog/base.html' %} {% block content %} {% for post in posts %}
 
-<link rel="stylesheet" href="{% static 'blog/style.css' %}" />
+<a href="{{post.get_absolute_url}}">{{post}}</a>
 
-{% for post in posts %}
-
-<a href="{{ post.id }}">{{post.title}}</a>
-
-{% endfor %} {% include "blog/test.html" %}
+{% endfor %} {% endblock content %}

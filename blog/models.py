@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 # Create your models here.
 
@@ -17,7 +18,7 @@ class Post(models.Model):
         PUBLISHED = "PB", "Published"
 
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250)
+    slug = models.SlugField(max_length=250, unique_for_date="publish")
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="blog_posts"
     )
@@ -40,53 +41,11 @@ class Post(models.Model):
             models.Index(fields=["-publish"]),
         ]
 
-    def __str__(self):
-        return self.title
-
-
-class Thesis(models.Model):
-    class Status(models.TextChoices):
-        REJECTED = "RJ", "Rejected"
-        PUBLISHED = "PB", "Published"
-        UNDER_REVIEW = "UR", "Under Review"
-
-    title = models.CharField(max_length=250)
-    abstract = models.TextField()
-    status = models.CharField(
-        max_length=3, choices=Status.choices, default=Status.UNDER_REVIEW
-    )
-
-    authors = models.ManyToManyField("Author", related_name="theses")
-    panelists = models.ManyToManyField("Panelist", related_name="theses")
-
-    defense_date = models.DateTimeField()
-    published_date = models.DateTimeField()
-    paper_link = models.CharField(max_length=250)
-    institution = models.CharField(max_length=250)
-    department = models.CharField(max_length=250)
-    adviser = models.CharField(max_length=250)
-    keywords = models.ManyToManyField("Keyword", related_name="theses")
+    def get_absolute_url(self):
+        return reverse(
+            "blog:post_detail",
+            args=[self.publish.year, self.publish.month, self.publish.day, self.slug],
+        )
 
     def __str__(self):
         return self.title
-
-
-class Author(models.Model):
-    name = models.CharField(max_length=250)
-
-    def __str__(self):
-        return self.name
-
-
-class Panelist(models.Model):
-    name = models.CharField(max_length=250)
-
-    def __str__(self):
-        return self.name
-
-
-class Keyword(models.Model):
-    word = models.CharField(max_length=40)
-
-    def __str__(self):
-        return self.name
