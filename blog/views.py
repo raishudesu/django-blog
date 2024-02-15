@@ -1,17 +1,17 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Post
+from django.core.paginator import Paginator
 
 # Create your views here.
 
 
-def index(request):
-    return HttpResponse("Working!")
-
-
 def post_list(request):
-    posts = Post.objects.all()
-    return render(request, "blog/list.html", {"posts": posts})
+    posts = Post.published.all()
+    paginator = Paginator(posts, 5)
+    page_number = request.GET.get("page", 1)
+    posts = paginator.page(page_number)
+    return render(request, "blog/post/list.html", {"posts": posts})
 
 
 def post_detail(request, year, month, day, post):
@@ -25,4 +25,4 @@ def post_detail(request, year, month, day, post):
         publish__month=month,
         publish__day=day,
     )
-    return render(request, "blog/detail.html", {"post": post})
+    return render(request, "blog/post/detail.html", {"post": post})
